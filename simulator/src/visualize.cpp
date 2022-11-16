@@ -48,26 +48,22 @@ void Visualize::printSimulation()
   glVertex2d(state_visu->joint[0].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[0].z*PLOT_RATE+Y_DISP);//(x,y)
   glVertex2d(state_visu->joint[1].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[1].z*PLOT_RATE+Y_DISP);
   glVertex2d(state_visu->joint[2].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[2].z*PLOT_RATE+Y_DISP);
-  glVertex2d(state_visu->joint[3].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[3].z*PLOT_RATE+Y_DISP);
-  glVertex2d(state_visu->joint[4].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[4].z*PLOT_RATE+Y_DISP);  
   glEnd();//処理の終了
 
-//線の指定(ロッカーリンク)
+//線の指定(下腿リンク)
   glLineWidth(6);//線の太さを指定
   glColor3d(BLUE);
   glBegin(GL_LINE_STRIP);//最初の頂点から最後の頂点まで、線分を連結して描画
-  glVertex2d(state_visu->joint[1].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[1].z*PLOT_RATE+Y_DISP);//関節
-  glVertex2d(state_visu->joint[0].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[0].z*PLOT_RATE+Y_DISP);//重心位置
-  glVertex2d(state_visu->joint[2].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[2].z*PLOT_RATE+Y_DISP);//後輪
+  glVertex2d(state_visu->joint[0].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[0].z*PLOT_RATE+Y_DISP);//足首関節
+  glVertex2d(state_visu->joint[1].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[1].z*PLOT_RATE+Y_DISP);//膝関節
   glEnd();
 
-//ボギーリンク
+//大腿リンク
   glLineWidth(6);
   glColor3d(RED);
   glBegin(GL_LINE_STRIP);
-  glVertex2d(state_visu->joint[3].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[3].z*PLOT_RATE+Y_DISP);
   glVertex2d(state_visu->joint[1].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[1].z*PLOT_RATE+Y_DISP);
-  glVertex2d(state_visu->joint[4].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[4].z*PLOT_RATE+Y_DISP);
+  glVertex2d(state_visu->joint[2].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[2].z*PLOT_RATE+Y_DISP);
   glEnd(); 
 
   printGround();//地面の描画
@@ -75,9 +71,7 @@ void Visualize::printSimulation()
 //タイヤ
   glLineWidth(4);
   glColor3d(BLUE);
-  printCircle(POLYGON_N, state_visu->joint[2].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[2].z*PLOT_RATE+Y_DISP,WHEEL_R);
-  printCircle(POLYGON_N,state_visu->joint[3].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[3].z*PLOT_RATE+Y_DISP,WHEEL_R);
-  printCircle(POLYGON_N,state_visu->joint[4].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[4].z*PLOT_RATE+Y_DISP,WHEEL_R);
+  printCircle(POLYGON_N, state_visu->joint[0].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[0].z*PLOT_RATE+Y_DISP,WHEEL_R);
   glEnd();
 
 //モータリンク
@@ -85,27 +79,23 @@ void Visualize::printSimulation()
   glColor3d(ORANGE);
   glBegin(GL_LINE_STRIP);
   glVertex2d(state_visu->joint[1].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[1].z*PLOT_RATE+Y_DISP);
-  glVertex2d((state_visu->joint[1].x+L_M*cos(-state_visu->pose[4]+state_visu->pose[3]+state_visu->pose[2]+spring_angle*M_PI/180))*PLOT_RATE/ratio+X_DISP, (state_visu->joint[1].z+L_M*sin(-state_visu->pose[4]+state_visu->pose[3]+state_visu->pose[2]+spring_angle*M_PI/180))*PLOT_RATE+Y_DISP);
+  glVertex2d(state_visu->joint[1].x+0.05*cos(state_visu->pose[3]+state_visu->pose[2])*PLOT_RATE/ratio+X_DISP, state_visu->joint[1].z+0.05*sin(state_visu->pose[3]+state_visu->pose[2])*PLOT_RATE+Y_DISP);
   glEnd(); 
 
-  // glLineWidth(6);
-  // glColor3d(0, 0.6, 0);
-  // glBegin(GL_LINE_STRIP);
-  // glVertex2d(state_visu->joint[0].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[0].z*PLOT_RATE+Y_DISP);
-  // glVertex2d((state_visu->joint[1].x+L_M*cos(-state_visu->pose[4]+state_visu->pose[3]+state_visu->pose[2]+spring_angle*M_PI/180))*PLOT_RATE/ratio+X_DISP, (state_visu->joint[1].z+L_M*sin(-state_visu->pose[4]+state_visu->pose[3]+state_visu->pose[2]+spring_angle*M_PI/180))*PLOT_RATE+Y_DISP);
-  // glEnd(); 
+  glLineWidth(6);
+  glColor3d(0, 0.6, 0);
+  glBegin(GL_LINE_STRIP);
+  glVertex2d(state_visu->joint[2].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[2].z*PLOT_RATE+Y_DISP);
+  glVertex2d(state_visu->joint[2].x+L_3*cos(state_visu->pose[5]+state_visu->pose[4]+state_visu->pose[3]+state_visu->pose[2])*PLOT_RATE/ratio+X_DISP, state_visu->joint[2].z+L_3*sin(state_visu->pose[5]+state_visu->pose[4]+state_visu->pose[3]+state_visu->pose[2])*PLOT_RATE+Y_DISP);
+  glEnd(); 
 
-  // glBegin(GL_POINTS);
-  // glColor3d(ORANGE);
-  // glVertex2d((state_visu->joint[1].x+L_M*cos(-state_visu->pose[4]+state_visu->pose[3]+state_visu->pose[2]+spring_angle*M_PI/180))*PLOT_RATE/ratio+X_DISP, (state_visu->joint[1].z+L_M*sin(-state_visu->pose[4]+state_visu->pose[3]+state_visu->pose[2]+spring_angle*M_PI/180))*PLOT_RATE+Y_DISP);
-  // glEnd();   
-
-  glLineWidth(10);
-  glColor3d(1.0, 0.4, 0.0);
-  for(int i=0;i<3; i++)
-  {
-    printArc(state_visu->joint[i+2].x, state_visu->joint[i+2].z,WHEEL_R*0.8,state_visu->torque[2-i]/10.);
-  }
+  
+  // glLineWidth(10);
+  // glColor3d(1.0, 0.4, 0.0);
+  // for(int i=0;i<3; i++)
+  // {
+  //   printArc(state_visu->joint[i+2].x, state_visu->joint[i+2].z,WHEEL_R*0.8,state_visu->torque[2-i]/10.);
+  // }
 
   glColor3d(ORANGE);
   printArc(state_visu->joint[1].x, state_visu->joint[1].z,WHEEL_R*0.8,-state_visu->external_forces[4]);
@@ -123,12 +113,9 @@ void Visualize::printSimulation()
   stringstream time,jt,ft,mt,bt,st,rw;
   time << "TIME : " <<  v_simulation->timer <<" [sec]";
   jt << "LINK JOINT MOTOR TORQUE : " << state_visu->external_forces[4] <<" [N m]"; 
-  ft << "FORWARD MOTOR TORQUE : " <<  state_visu->torque[0]<<" [N m]";
-  mt << "MIDDLE MOTOR TORQUE : " <<  state_visu->torque[1]<<" [N m]";
-  bt << "REAR MOTOR TORQUE : " <<  state_visu->torque[2]<<" [N m]";
+  ft << "WHEEL MOTOR TORQUE : " <<  state_visu->torque<<" [N m]";
   // st << "Spring Torque: " << state_visu->springTorque;
-  st << "Spring Torque: " << state_visu->external_forces[4];
-  // rw << "reward: " << v_simulation->reward;  
+ 
   double font_pose = 20;
   DrawString(time.str(), IMAGE_WIDTH, IMAGE_HEIGHT, font_pose, font_pose);
   DrawString(jt.str(), IMAGE_WIDTH, IMAGE_HEIGHT, font_pose, font_pose*2);

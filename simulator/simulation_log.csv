@@ -1,1 +1,1 @@
-time[sec]	x[m]	z[m]	Theta_r[deg]	Theta_j[deg]	dx/dt[m/s]	dz/dt[m/s]	d(Theta_r)/dt[rad/sec]	d(Theta_j)/dt[rad/sec]	torque_forward[Nm]	torque_middle[Nm]	torque_back[Nm]	torque_joint[Nm]	Control Target	angle between rocker bogie & motor link	motor torque	theta_m
+time[sec]	x[m]	z[m]	Theta_r[deg]	Theta_j[deg]	dx/dt[m/s]	dz/dt[m/s]	d(Theta_r)/dt[rad/sec]	d(Theta_j)/dt[rad/sec]	wheel torque	motor torque	body torque	

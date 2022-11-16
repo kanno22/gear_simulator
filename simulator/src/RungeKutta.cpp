@@ -1,12 +1,11 @@
 #include "RungeKutta.hpp"
 
 stateClass RungeKutta(stateClass state, stateClass(*func)(stateClass)){
-    //funcは返り値stateClass 戻り値stateClassの関数のアドレスを格納する関数ポインタ
+    
     stateClass state_org = state;
     stateClass k1, k2, k3, k4;
    
-
-    k1.velo = delta_t * (*func)(state).velo;//eq_differentialを実行
+    k1.velo = delta_t * (*func)(state).velo;
     k1.pose = delta_t * (*func)(state).pose;
 
     state.velo = state_org.velo +0.5* k1.velo;
