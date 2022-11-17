@@ -2,12 +2,12 @@
 
 // ロボットの初期位置 
 // x座標[m]
-#define X_START 0
+#define X_START -0.2
 // z座標[m]
-#define Z_START WHEEL_R 
+#define Z_START 0.2//WHEEL_R 
 // 初期角度[deg]
-#define THETA_1_START 0
-#define THETA_m_START 0
+#define THETA_1_START 45
+#define THETA_m_START 90
 #define THETA_2_START 0
 #define THETA_3_START 0
 
@@ -122,7 +122,7 @@ stateClass modelClass::eq_differential(stateClass state)
     inertia(3,3) =  J_m+J_2+M_2*pow(P_2,2)+M_3*pow(L_2,2)+J_3+M_3*pow(P_3,2)+2*M_3*L_2*P_3*cos(theta_3);
     inertia(3,4) = J_2+M_2*pow(P_2,2)+M_3*pow(L_2,2)+J_3+M_3*pow(P_3,2)+2*M_3*L_2*P_3*cos(theta_3);
     inertia(3,5) = J_3+M_3*pow(P_3,2)+M_3*L_2*P_3*cos(theta_3);
-    inertia(4,0) = -(((M_2*P_2+M_3*L_2)*sin(theta_1+theta_2+theta_m)+M_3*P_3*sin(theta_1+theta_2+theta_3+theta_m)));
+    inertia(4,0) = -((M_2*P_2+M_3*L_2)*sin(theta_1+theta_2+theta_m)+M_3*P_3*sin(theta_1+theta_2+theta_3+theta_m));
     inertia(4,1) = (M_2*P_2+M_3*L_2)*cos(theta_1+theta_2+theta_m)+M_3*P_3*cos(theta_1+theta_2+theta_3+theta_m);
     inertia(4,2) = J_2+M_2*pow(P_2,2)+M_3*pow(L_2,2)+J_3+M_3*pow(P_3,2)+M_3*L_1*L_2*cos(theta_2+theta_m)+M_3*L_1*P_3*cos(theta_2+theta_3+theta_m)+2*M_3*L_2*P_3*cos(theta_3);
     inertia(4,3) = J_2+M_2*pow(P_2,2)+M_3*pow(L_2,2)+J_3+M_3*pow(P_3,2)+2*M_3*L_2*P_3*cos(theta_3);
@@ -130,17 +130,17 @@ stateClass modelClass::eq_differential(stateClass state)
     inertia(4,5) = J_3+M_3*pow(P_3,2)+M_3*L_2*P_3*cos(theta_3);
     inertia(5,0) = -M_3*P_3*sin(theta_1+theta_2+theta_3+theta_m);
     inertia(5,1) = M_3*P_3*cos(theta_1+theta_2+theta_3+theta_m);
-    inertia(5,2) = J_3+M_3*pow(P_3,2)+M_3*L_1*L_2*cos(theta_2+theta_m)+M_3*L_1*P_3*cos(theta_2+theta_3+theta_m)+M_3*L_2*P_3*cos(theta_3);
+    inertia(5,2) = J_3+M_3*pow(P_3,2)+M_3*L_1*P_3*cos(theta_2+theta_3+theta_m)+M_3*L_2*P_3*cos(theta_3);
     inertia(5,3) = J_3+M_3*pow(P_3,2)+M_3*L_2*P_3*cos(theta_3);
     inertia(5,4) = J_3+M_3*pow(P_3,2)+M_3*L_2*P_3*cos(theta_3);
     inertia(5,5) = J_3+M_3*pow(P_3,2);
 
-    corioli_cent(0) = -(M_1*P_1+(M_2+M_3+M_m)*L_1)*pow(dtheta_1,2)*cos(theta_1)-(M_2+M_3+M_m)*pow(dtheta_1+dtheta_2+dtheta_m,2)*cos(theta_1+theta_2+theta_m)-M_3*P_3*pow(dtheta_1+dtheta_2+dtheta_3+dtheta_m,2)*cos(theta_1+theta_2+theta_3+theta_m);
-    corioli_cent(1) =  -(M_1*P_1+(M_2+M_3+M_m)*L_1)*pow(dtheta_1,2)*sin(theta_1)-(M_2+M_3+M_m)*pow(dtheta_1+dtheta_2+dtheta_m,2)*sin(theta_1+theta_2+theta_m)-M_3*P_3*pow(dtheta_1+dtheta_2+dtheta_3+dtheta_m,2)*sin(theta_1+theta_2+theta_3+theta_m);
+    corioli_cent(0) = -(M_1*P_1+(M_2+M_3+M_m)*L_1)*pow(dtheta_1,2)*cos(theta_1)-(M_2*P_2+M_3*L_2)*pow(dtheta_1+dtheta_2+dtheta_m,2)*cos(theta_1+theta_2+theta_m)-M_3*P_3*pow(dtheta_1+dtheta_2+dtheta_3+dtheta_m,2)*cos(theta_1+theta_2+theta_3+theta_m);
+    corioli_cent(1) =  -(M_1*P_1+(M_2+M_3+M_m)*L_1)*pow(dtheta_1,2)*sin(theta_1)-(M_2*P_2+M_3*L_2)*pow(dtheta_1+dtheta_2+dtheta_m,2)*sin(theta_1+theta_2+theta_m)-M_3*P_3*pow(dtheta_1+dtheta_2+dtheta_3+dtheta_m,2)*sin(theta_1+theta_2+theta_3+theta_m);
     corioli_cent(2) =   -M_3*L_1*L_2*(dtheta_2+dtheta_m)*(2*dtheta_1+dtheta_2+dtheta_m)*sin(theta_2+theta_m)-M_3*L_1*P_3*(dtheta_2+dtheta_3+dtheta_m)*(2*dtheta_1+dtheta_2+dtheta_3+dtheta_m)*sin(theta_2+theta_3+theta_m)-M_3*L_2*P_3*dtheta_3*(2*dtheta_1+2*dtheta_2+dtheta_3+2*dtheta_m)*sin(theta_3);
-    corioli_cent(3) =   -M_3*L_2*P_3*dtheta_3*(2*dtheta_1+2*dtheta_2+dtheta_3+2*dtheta_m)*sin(theta_3);
-    corioli_cent(4) = -M_3*L_2*P_3*dtheta_3*(2*dtheta_1+2*dtheta_2+dtheta_3+2*dtheta_m)*sin(theta_3);
-    corioli_cent(5) = M_3*L_2*P_3*pow(dtheta_1+dtheta_2+dtheta_m,2)*sin(theta_3);
+    corioli_cent(3) =   -M_3*L_2*P_3*dtheta_3*(2*dtheta_1+2*dtheta_2+dtheta_3+2*dtheta_m)*sin(theta_3)+M_3*L_1*L_2*pow(dtheta_1,2)*sin(theta_2+theta_m)+M_3*L_1*P_3*pow(dtheta_1,2)*sin(theta_2+theta_3+theta_m);
+    corioli_cent(4) = -M_3*L_2*P_3*dtheta_3*(2*dtheta_1+2*dtheta_2+dtheta_3+2*dtheta_m)*sin(theta_3)+M_3*L_1*L_2*pow(dtheta_1,2)*sin(theta_2+theta_m)+M_3*L_1*P_3*pow(dtheta_1,2)*sin(theta_2+theta_3+theta_m);
+    corioli_cent(5) = M_3*L_2*P_3*pow(dtheta_1+dtheta_2+dtheta_m,2)*sin(theta_3)+M_3*L_1*P_3*pow(dtheta_1,2)*sin(theta_2+theta_3+theta_m);
 
     potential(0) =  0;
     potential(1) =  (M_1 + M_2 + M_m + M_3)*g;

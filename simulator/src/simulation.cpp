@@ -12,6 +12,8 @@
 
 #define TIME_SLOW_RATE 1
 
+#define STOP_SIMULATION
+
 #define T_UP 1
 double finish_time = 100;
 
@@ -125,7 +127,9 @@ void Simulation::simu_loop(stateClass& state)//メイン
             <<currentState.external_forces[3] << "\t"
             << currentState.external_forces[4] << "\t"
             << endl;
-
+       #ifdef STOP_SIMULATION
+        while( std::getchar() != '\n');
+      #endif 
     
     if (timer > finish_time) end_flag = 1;
     else end_flag =0;
@@ -166,7 +170,7 @@ stateClass Simulation::calc_reactForce(stateClass currentState)
 
       if(reactForce<0) reactForce=0;
 
-      double torque = currentState.torque;
+      double torque =currentState.torque;
       double f_x = torque;//前輪による水平力
       double f_z = reactForce;//床反力
 

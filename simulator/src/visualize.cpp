@@ -79,14 +79,14 @@ void Visualize::printSimulation()
   glColor3d(ORANGE);
   glBegin(GL_LINE_STRIP);
   glVertex2d(state_visu->joint[1].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[1].z*PLOT_RATE+Y_DISP);
-  glVertex2d(state_visu->joint[1].x+0.05*cos(state_visu->pose[3]+state_visu->pose[2])*PLOT_RATE/ratio+X_DISP, state_visu->joint[1].z+0.05*sin(state_visu->pose[3]+state_visu->pose[2])*PLOT_RATE+Y_DISP);
+  glVertex2d((state_visu->joint[1].x+0.05*cos((state_visu->pose[3]+state_visu->pose[2])))*PLOT_RATE/ratio+X_DISP, (state_visu->joint[1].z+0.05*sin((state_visu->pose[3]+state_visu->pose[2])))*PLOT_RATE+Y_DISP);
   glEnd(); 
 
   glLineWidth(6);
   glColor3d(0, 0.6, 0);
   glBegin(GL_LINE_STRIP);
   glVertex2d(state_visu->joint[2].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[2].z*PLOT_RATE+Y_DISP);
-  glVertex2d(state_visu->joint[2].x+L_3*cos(state_visu->pose[5]+state_visu->pose[4]+state_visu->pose[3]+state_visu->pose[2])*PLOT_RATE/ratio+X_DISP, state_visu->joint[2].z+L_3*sin(state_visu->pose[5]+state_visu->pose[4]+state_visu->pose[3]+state_visu->pose[2])*PLOT_RATE+Y_DISP);
+  glVertex2d((state_visu->joint[2].x+L_3*cos(state_visu->pose[5]+state_visu->pose[4]+state_visu->pose[3]+state_visu->pose[2]))*PLOT_RATE/ratio+X_DISP, (state_visu->joint[2].z+L_3*sin(state_visu->pose[5]+state_visu->pose[4]+state_visu->pose[3]+state_visu->pose[2]))*PLOT_RATE+Y_DISP);
   glEnd(); 
 
   
