@@ -4,11 +4,11 @@
 // x座標[m]
 #define X_START -0.2
 // z座標[m]
-#define Z_START 0.2//WHEEL_R 
+#define Z_START 0.2//WHEEL_R //0.2
 // 初期角度[deg]
 #define THETA_1_START 45
-#define THETA_m_START 90
-#define THETA_2_START 0
+#define THETA_m_START 0
+#define THETA_2_START 90
 #define THETA_3_START 0
 
 extern double delta_t;
@@ -60,7 +60,27 @@ void stateClass::kinematics()
     //2_3間関節
     joint[2].x = *x+  L_1 * cos(*theta_1)+L_2 * cos(*theta_1+*theta_m+*theta_2);
     joint[2].z = *z + L_1 * sin(*theta_1)+L_2 * sin(*theta_1+*theta_m+*theta_2);
-}
+
+    //下腿リンク重心位置
+    joint[3].x=*x+P_1*cos(*theta_1);
+    joint[3].z=*z+P_1*sin(*theta_1);
+
+    //モータリンク重心位置
+    joint[4].x=*x+  L_1 * cos(*theta_1);
+    joint[4].z=*z + L_1 * sin(*theta_1);
+
+    //大腿リンク重心位置
+    joint[5].x = *x+  L_1 * cos(*theta_1)+P_2 * cos(*theta_1+*theta_m+*theta_2);
+    joint[5].z = *z + L_1 * sin(*theta_1)+P_2 * sin(*theta_1+*theta_m+*theta_2);
+
+    //ボディリンク重心位置
+    joint[6].x = *x+  L_1 * cos(*theta_1)+L_2 * cos(*theta_1+*theta_m+*theta_2)+P_3 * cos(*theta_1+*theta_m+*theta_2+*theta_3);
+    joint[6].z = *z + L_1 * sin(*theta_1)+L_2 * sin(*theta_1+*theta_m+*theta_2)+P_3 * sin(*theta_1+*theta_m+*theta_2+*theta_3);
+
+    //重心位置
+    joint[7].x=(M_1*joint[3].x+M_m*joint[4].x+M_2*joint[5].x+M_3*joint[6].x)/(M_1+M_m+M_2+M_3);
+    joint[7].z=(M_1*joint[3].z+M_m*joint[4].z+M_2*joint[5].z+M_3*joint[6].z)/(M_1+M_m+M_2+M_3);
+ }
 
 void stateClass::get_wheel_h_min()
 {

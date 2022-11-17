@@ -30,7 +30,7 @@ class stateClass{
     double torque;
 
     double wheel_h_min;
-    jointClass joint[3];
+    jointClass joint[9];//+5
 
     void reset_state();
     void kinematics();

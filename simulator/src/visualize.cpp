@@ -48,6 +48,16 @@ void Visualize::printSimulation()
   glVertex2d(state_visu->joint[0].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[0].z*PLOT_RATE+Y_DISP);//(x,y)
   glVertex2d(state_visu->joint[1].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[1].z*PLOT_RATE+Y_DISP);
   glVertex2d(state_visu->joint[2].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[2].z*PLOT_RATE+Y_DISP);
+  glVertex2d(state_visu->joint[3].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[3].z*PLOT_RATE+Y_DISP);
+  glVertex2d(state_visu->joint[4].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[4].z*PLOT_RATE+Y_DISP);
+  glVertex2d(state_visu->joint[5].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[5].z*PLOT_RATE+Y_DISP);
+  glVertex2d(state_visu->joint[6].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[6].z*PLOT_RATE+Y_DISP);
+  glEnd();//処理の終了
+
+  glColor3d(RED);//色の指定
+  glPointSize(12);//サイズの指定
+  glBegin(GL_POINTS);//位置指定(GL_POINTS:各頂点を単独の点として扱う)
+  glVertex2d(state_visu->joint[7].x*PLOT_RATE/ratio+X_DISP, state_visu->joint[7].z*PLOT_RATE+Y_DISP);//(x,y)
   glEnd();//処理の終了
 
 //線の指定(下腿リンク)

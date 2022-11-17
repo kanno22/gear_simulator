@@ -58,16 +58,20 @@
 #define K_WHEEL 5000
 #define C_WHEEL 100
 
+//AngleControl用のゲイン 
+#define P_GEIN 100
+#define D_GEIN 10
+
 // ディスプレイ設定
 // 描画の大きさ
 #define IMAGE_WIDTH  720.0
 #define IMAGE_HEIGHT 480.0
 #define RATIO_XY (IMAGE_WIDTH /IMAGE_HEIGHT) 
 // ロボットの描画位置
-#define Y_DISP -0.7//-0.5
+#define Y_DISP -0.3//-0.7//-0.5
 #define X_DISP 0
 // ロボットの描画の大きさ
-#define PLOT_RATE 3
+#define PLOT_RATE 2
 
 #define X_WINDOWSIZE 600.0
 #define Y_WINDOWSIZE 900.0

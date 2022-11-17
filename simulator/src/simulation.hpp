@@ -19,6 +19,11 @@ class Simulation
 
     bool end_flag;
     // double torque[3];
+    // //PID制御用の変数 
+    // /Eigen::Matrix<double, 6, 1> pose
+    // // double error;
+    // // double olderror;
+    // //
     void update_input();
 
     public:
@@ -33,6 +38,8 @@ class Simulation
     stateClass calc_reactForce(stateClass currentState);
     stateClass sim_calc();
     
+    //stateClass AngleControl(stateClass currentState);
+
     void simu_loop(stateClass& state);
     double get_ground(double x);
     void logging();
