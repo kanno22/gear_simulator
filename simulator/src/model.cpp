@@ -6,9 +6,9 @@
 // z座標[m]
 #define Z_START 0.2//WHEEL_R //0.2
 // 初期角度[deg]
-#define THETA_1_START 45
+#define THETA_1_START 90
 #define THETA_m_START 0
-#define THETA_2_START 90
+#define THETA_2_START 0
 #define THETA_3_START 0
 
 extern double delta_t;

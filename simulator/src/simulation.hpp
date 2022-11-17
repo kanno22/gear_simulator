@@ -19,11 +19,17 @@ class Simulation
 
     bool end_flag;
     // double torque[3];
-    // //PID制御用の変数 
-    // /Eigen::Matrix<double, 6, 1> pose
-    // // double error;
-    // // double olderror;
-    // //
+    //PD制御用の変数 
+    Matrix<double, 6, 1> pose_ref;
+    Matrix<double, 6, 1> error;
+    Matrix<double, 6, 1> olderror;
+    
+    //角度励振用のパラメータ
+    double la;
+    double lmax;
+    double fg;
+    double wg;
+
     void update_input();
 
     public:
@@ -38,7 +44,9 @@ class Simulation
     stateClass calc_reactForce(stateClass currentState);
     stateClass sim_calc();
     
-    //stateClass AngleControl(stateClass currentState);
+    void PD();//角度制御
+    void AngleExcitation();//角度制御で励振
+    void BodyAngle();//ボディリンク目標角度ジェネレータ
 
     void simu_loop(stateClass& state);
     double get_ground(double x);

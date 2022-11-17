@@ -9,21 +9,25 @@
 #define M_1  0.13//下腿
 #define M_m  0.05//モータ
 #define M_2  0.56//大腿
-#define M_3  0.2//ボディ
+//#define M_3  0.2//ボディ
+#define M_3 0.5
 
 //リンク長さ[m]
 #define L_1  0.2//下腿
 #define P_1  0.1
 #define L_2  0.2//大腿
 #define P_2  0.05
-#define L_3  0.1//ボディ
-#define P_3  0.05
+// #define L_3  0.1//ボディ
+// #define P_3  0.05
+#define L_3 0.21
+#define P_3 0.21
 
 //慣性モーメント[kg m^2]
 #define	J_1		6.851E-3//下腿
 #define	J_m		3.915776E-3//モータ
 #define J_2     7.862E-3//大腿
-#define J_3     5.0E-3 //ボディ
+//#define J_3     5.0E-3 //ボディ
+#define J_3 0
 
 // 車輪半径[m]
 #define WHEEL_R 0.025
@@ -35,10 +39,11 @@
 
 // 最大車軸トルク[N m]
 #define MAX_TORQUE 5
-// 最大関節トルク[N m]
-#define MAX_JOINT_TORQUE 10
-// 最大関節モータトルク[N m]
-#define  MAX_J_MOTOR_TORQUE 10
+
+//最大モータリンクトルク[N m]
+#define MAX_M_JOINT_TORQUE 5
+//最大ボディリンクトルク[N m]
+#define  MAX_B_JOINT_TORQUE 5
 
 // ばね定数[Nm/rad]
 #define K_SPRING 1.92
@@ -59,8 +64,8 @@
 #define C_WHEEL 100
 
 //AngleControl用のゲイン 
-#define P_GEIN 100
-#define D_GEIN 10
+#define P_GEIN 20
+#define D_GEIN 2
 
 // ディスプレイ設定
 // 描画の大きさ

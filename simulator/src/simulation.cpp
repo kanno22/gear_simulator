@@ -38,6 +38,17 @@ Simulation::Simulation()
 {
   timer = 0;  
   end_flag = 0;
+//
+  pose_ref<<0,0,0,0,0,0;
+  error<<0,0,0,0,0,0;
+  olderror<<0,0,0,0,0,0;
+
+//
+  la=20*(M_PI/180);
+  lmax=100*(M_PI/180);
+  fg=2;
+  wg=2*M_PI*fg;
+
   reset_simulation();
 }
 
@@ -80,9 +91,51 @@ void Simulation::logging()
 
 void Simulation::update_input()
 {
- currentState.external_forces[4]=0.0;//大腿リンクへの入力
- currentState.external_forces[5]=0.0;//ボディリンクへの入力
 
+
+//AngleExcitation();
+BodyAngle();
+PD();//角度をPD制御
+//  currentState.external_forces[4]=0.0;//大腿リンクへの入力
+//  currentState.external_forces[5]=0.0;//ボディリンクへの入力
+
+}
+
+void Simulation::AngleExcitation()
+{
+  pose_ref[4]=(lmax/2)+la*sin(wg*timer);
+}
+void Simulation::BodyAngle()
+{
+  pose_ref[5]=90*(M_PI/180);
+}
+
+void Simulation::PD()
+{
+  Matrix<double, 6, 1> u;
+  error=pose_ref-currentState.pose;
+
+
+  if(timer==0) olderror=error;
+
+  u=P_GEIN*error+D_GEIN*(error-olderror)/delta_t;
+
+  if(abs(u[4])>MAX_M_JOINT_TORQUE)//モータリンク入力制限
+  {
+    if(u[4]>0)u[4]=MAX_M_JOINT_TORQUE;
+    else if(u[4]<0)u[4]=-MAX_M_JOINT_TORQUE;
+  }
+  if(abs(u[5])>MAX_B_JOINT_TORQUE)//ボディリンク入力制限
+  {
+    if(u[5]>0)u[5]=MAX_B_JOINT_TORQUE;
+    else if(u[5]<0)u[5]=-MAX_B_JOINT_TORQUE;
+  }
+
+  currentState.external_forces[4]=u[4];//theta2(モータ角度)
+  currentState.external_forces[5]=u[5];//theta3(ボディ間のモータ角度)
+
+
+  olderror=error;
 }
 
 stateClass Simulation::sim_calc()
@@ -141,7 +194,7 @@ stateClass Simulation::calc_reactForce(stateClass currentState)
   double f_x= currentState.joint[0].x;
   double f_z = currentState.joint[0].z;  
 
-  for(int i=0; i<4; i++)
+  for(int i=0; i<6; i++)
   {
     currentState.external_forces[i]=0;//外力をリセット
   }
