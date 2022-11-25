@@ -100,12 +100,11 @@ void Visualize::printSimulation()
   glEnd(); 
 
   
-  // glLineWidth(10);
-  // glColor3d(1.0, 0.4, 0.0);
-  // for(int i=0;i<3; i++)
-  // {
-  //   printArc(state_visu->joint[i+2].x, state_visu->joint[i+2].z,WHEEL_R*0.8,state_visu->torque[2-i]/10.);
-  // }
+  glLineWidth(10);
+  glColor3d(1.0, 0.4, 0.0);
+
+  printArc(state_visu->joint[0].x, state_visu->joint[0].z,WHEEL_R*0.8,state_visu->torque/10);
+  
 
   glColor3d(ORANGE);
   printArc(state_visu->joint[1].x, state_visu->joint[1].z,WHEEL_R*0.8,-state_visu->external_forces[4]);

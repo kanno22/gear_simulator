@@ -1,16 +1,5 @@
 #include "model.hpp"  
 
-// ロボットの初期位置 
-// x座標[m]
-#define X_START -0.2
-// z座標[m]
-#define Z_START 0.2//WHEEL_R //0.2
-// 初期角度[deg]
-#define THETA_1_START 90
-#define THETA_m_START 0
-#define THETA_2_START 0
-#define THETA_3_START 0
-
 extern double delta_t;
 
 Eigen::Matrix<double, 6, 1> modelClass::tau;//外力項
@@ -33,7 +22,10 @@ stateClass::stateClass(){
     theta_m_dot = &velo[3];
     theta_2_dot = &velo[4];
     theta_3_dot = &velo[5];
+
+    theta_g=0;
     
+
     reset_state();
 }
 
@@ -80,6 +72,9 @@ void stateClass::kinematics()
     //重心位置
     joint[7].x=(M_1*joint[3].x+M_m*joint[4].x+M_2*joint[5].x+M_3*joint[6].x)/(M_1+M_m+M_2+M_3);
     joint[7].z=(M_1*joint[3].z+M_m*joint[4].z+M_2*joint[5].z+M_3*joint[6].z)/(M_1+M_m+M_2+M_3);
+
+    //重心角度
+    theta_g=atan2(joint[7].x-*x,joint[7].z);
  }
 
 void stateClass::get_wheel_h_min()

@@ -44,10 +44,16 @@ Simulation::Simulation()
   olderror<<0,0,0,0,0,0;
 
 //
-  la=20*(M_PI/180);
-  lmax=100*(M_PI/180);
+  la=45*(M_PI/180);
+  lmax=2*THETA_2_START*(M_PI/180);
   fg=2;
   wg=2*M_PI*fg;
+
+//
+  state<<0,0,0,0;
+  oldstate<<0,0,0,0;
+  state_ref<<X_START,0,0,0;
+  K<<-0.00492748,-0.0197099,25.7658,1.34647;//算出したゲインを入力
 
   reset_simulation();
 }
@@ -93,9 +99,10 @@ void Simulation::update_input()
 {
 
 
-//AngleExcitation();
+AngleExcitation();
 BodyAngle();
 PD();//角度をPD制御
+Statefeedback();
 //  currentState.external_forces[4]=0.0;//大腿リンクへの入力
 //  currentState.external_forces[5]=0.0;//ボディリンクへの入力
 
@@ -103,11 +110,24 @@ PD();//角度をPD制御
 
 void Simulation::AngleExcitation()
 {
-  pose_ref[4]=(lmax/2)+la*sin(wg*timer);
+
+  if(timer<1)
+  {
+    pose_ref[4]=THETA_2_START*(M_PI/180);
+  }
+  else
+  {
+    
+    pose_ref[4]=(lmax/2)+la*sin(wg*timer);
+    cout<<"\n"<<pose_ref[4]*(180/M_PI);
+  }
+  
 }
 void Simulation::BodyAngle()
 {
-  pose_ref[5]=90*(M_PI/180);
+  //pose_ref[5]=90*(M_PI/180);
+  // pose_ref[4]=THETA_2_START*(M_PI/180);
+  pose_ref[5]=THETA_3_START*(M_PI/180);
 }
 
 void Simulation::PD()
@@ -136,6 +156,39 @@ void Simulation::PD()
 
 
   olderror=error;
+}
+
+void Simulation::Statefeedback()
+{
+  double u;
+
+
+  if(timer==0) 
+  {
+    state<<currentState.pose(0,0),currentState.velo(0,0),currentState.theta_g,0;
+    oldstate=state;
+  }
+  else
+  {
+     state<<currentState.pose(0,0),currentState.velo(0,0),currentState.theta_g,(currentState.theta_g-oldstate(2,0))/delta_t;
+  }
+
+  // cout<<"theta_g=\n"<<currentState.theta_g;
+  // cout<<"oldtheta_g=\n"<<oldstate(2,0)<<endl;
+  
+  // cout<<"dtheta_g=\n"<<(currentState.theta_g-oldstate(2,0))/delta_t;
+  // cout<<"\n"<<currentState.velo(0,0)<<endl;
+  u=-K*(state_ref-state);
+  currentState.torque=u*WHEEL_R;
+
+  oldstate=state;
+  // if(abs(u[5])>MAX_WHEEL_TORQUE/WHEEL_R)//車輪トルク入力制限
+  // {
+  //   if(u[5]>0)u[5]=MAX_WHEEL_TORQUE/WHEEL_R;
+  //   else if(u[5]<0)u[5]=-MAX_WHEEL_TORQUE/WHEEL_R;
+  // }
+
+  //currentState.external_forces[0]=u;
 }
 
 stateClass Simulation::sim_calc()
@@ -176,7 +229,7 @@ void Simulation::simu_loop(stateClass& state)//メイン
             << currentState.pose[3]*180/M_PI << "\t"
             << currentState.pose[4]*180/M_PI << "\t"
             <<currentState.pose[5]*180/M_PI << "\t"
-            << currentState.torque*WHEEL_R << "\t"
+            << currentState.torque << "\t"
             <<currentState.external_forces[3] << "\t"
             << currentState.external_forces[4] << "\t"
             << endl;
@@ -204,8 +257,8 @@ stateClass Simulation::calc_reactForce(stateClass currentState)
 
     if((f_z-WHEEL_R)<get_ground(f_x) )
     {//前輪高さが地面にめり込んでいるor壁にめり込んでいる
-      double torque_z=currentState.torque;
-      double hoge=abs(currentState.torque);
+      // double torque_z=currentState.torque;
+      // double hoge=abs(currentState.torque);
 
       if((f_z-WHEEL_R)<get_ground(f_x)) 
       {
@@ -223,8 +276,8 @@ stateClass Simulation::calc_reactForce(stateClass currentState)
 
       if(reactForce<0) reactForce=0;
 
-      double torque =currentState.torque;
-      double f_x = torque;//前輪による水平力
+      double wheelforce =currentState.torque/WHEEL_R;
+      double f_x = wheelforce;//前輪による水平力
       double f_z = reactForce;//床反力
 
       currentState.external_forces[0] += f_x;

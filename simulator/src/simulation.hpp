@@ -23,6 +23,12 @@ class Simulation
     Matrix<double, 6, 1> pose_ref;
     Matrix<double, 6, 1> error;
     Matrix<double, 6, 1> olderror;
+
+    //状態フィードバック用の変数
+    Matrix<double,4,1> state;
+    Matrix<double,4,1> oldstate;
+    Matrix<double,4,1> state_ref;
+    Matrix<double,1,4> K;//状態フィードバックゲイン
     
     //角度励振用のパラメータ
     double la;
@@ -47,6 +53,8 @@ class Simulation
     void PD();//角度制御
     void AngleExcitation();//角度制御で励振
     void BodyAngle();//ボディリンク目標角度ジェネレータ
+
+    void Statefeedback();//状態フィードバック
 
     void simu_loop(stateClass& state);
     double get_ground(double x);
