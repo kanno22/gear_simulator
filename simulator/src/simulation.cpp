@@ -12,7 +12,7 @@
 
 #define TIME_SLOW_RATE 1
 
-#define STOP_SIMULATION
+//#define STOP_SIMULATION
 
 #define T_UP 1
 double finish_time = 100;
@@ -53,7 +53,12 @@ Simulation::Simulation()
   state<<0,0,0,0;
   oldstate<<0,0,0,0;
   state_ref<<X_START,0,0,0;
-  K<<-0.00492748,-0.0197099,25.7658,1.34647;//算出したゲインを入力
+ // K<<-0.312087,-0.65018,-31.9268,-1.53888;//-1,-2,-3,-4
+ // K<<-0.0130036,-0.0520144,-9.86449,-0.53132;//-1.-1,-1,-1 80degでも発散
+ //K<<-0.208058,-0.520144,-14.9185,-1.48624;//-4,-1,-4,-1
+  //K<<-3.32892,-3.32892,-82.0058,-3.38878;//-4,-4,-4,-4 60degだと発散
+  //K<<-0.208058,-0.416116,-14.9185,-1.18899;//-2,-2,-2,-2
+  K<<0,-0.416116,-14.9185,-1.18899;//位置指令なし
 
   reset_simulation();
 }
@@ -99,9 +104,11 @@ void Simulation::update_input()
 {
 
 
-AngleExcitation();
+//AngleExcitation();
 BodyAngle();
 PD();//角度をPD制御
+
+StateGenerator();
 Statefeedback();
 //  currentState.external_forces[4]=0.0;//大腿リンクへの入力
 //  currentState.external_forces[5]=0.0;//ボディリンクへの入力
@@ -111,7 +118,7 @@ Statefeedback();
 void Simulation::AngleExcitation()
 {
 
-  if(timer<1)
+  if(timer<5)
   {
     pose_ref[4]=THETA_2_START*(M_PI/180);
   }
@@ -126,7 +133,7 @@ void Simulation::AngleExcitation()
 void Simulation::BodyAngle()
 {
   //pose_ref[5]=90*(M_PI/180);
-  // pose_ref[4]=THETA_2_START*(M_PI/180);
+  pose_ref[4]=THETA_2_START*(M_PI/180);
   pose_ref[5]=THETA_3_START*(M_PI/180);
 }
 
@@ -178,7 +185,8 @@ void Simulation::Statefeedback()
   
   // cout<<"dtheta_g=\n"<<(currentState.theta_g-oldstate(2,0))/delta_t;
   // cout<<"\n"<<currentState.velo(0,0)<<endl;
-  u=-K*(state_ref-state);
+  u=K*(state_ref-state);
+  //cout<<"\n"<<state_ref-state;
   currentState.torque=u*WHEEL_R;
 
   oldstate=state;
@@ -189,6 +197,39 @@ void Simulation::Statefeedback()
   // }
 
   //currentState.external_forces[0]=u;
+}
+
+void Simulation::StateGenerator()
+{
+  // if(timer<1)
+  // {
+  //   state_ref<<X_START,0,0,0;
+  // }
+  // else if((timer>=1)&&(timer<2))
+  // {
+  //   state_ref<<X_START,1,0,0;//1m/s
+  // }
+  // else
+  // {
+  //   state_ref<<X_START,0,0,0;
+  // }
+
+  if(timer<3)
+  {
+    state_ref<<X_START,0.5,0,0;//1m/s
+  }
+  else
+  {
+    state_ref<<X_START,0,0,0;
+  }
+
+  cout<<"dxref="<<state_ref(1,0)<<endl;
+  cout<<"\n"<<endl;
+  cout<<"dx="<<state(1,0)<<endl;
+
+  currentState.wheel_velo=state(1,0);
+  currentState.wheel_velo_ref=state_ref(1,0);
+
 }
 
 stateClass Simulation::sim_calc()

@@ -9,15 +9,15 @@
 
 // ロボットの初期位置 
 // x座標[m]
-#define X_START -1
+#define X_START -0.9//0//-0.2//0.2//-0.2
 // z座標[m]
 //#define Z_START 0.2
 #define Z_START WHEEL_R 
 // 初期角度[deg]
-#define THETA_1_START 45
+#define THETA_1_START 90//80//45//80//60
 #define THETA_m_START 0
-#define THETA_2_START 45
-#define THETA_3_START -45
+#define THETA_2_START 0//90//45//0
+#define THETA_3_START 0//-45//0
 
 class jointClass{
     public:
@@ -36,6 +36,7 @@ class stateClass{
     double *x, *z, *theta_1, *theta_m, *theta_2, *theta_3;
     double *x_dot, *z_dot, *theta_1_dot, *theta_m_dot, *theta_2_dot, *theta_3_dot;
     double wheel_velo; 
+    double wheel_velo_ref;
     double theta_g;//重心角度
     //double dtheta_g;//重心角速度
     double external_forces[6];

@@ -102,35 +102,42 @@ void Visualize::printSimulation()
   
   glLineWidth(10);
   glColor3d(1.0, 0.4, 0.0);
-
-  printArc(state_visu->joint[0].x, state_visu->joint[0].z,WHEEL_R*0.8,state_visu->torque/10);
+  printArc(state_visu->joint[0].x, state_visu->joint[0].z,WHEEL_R*0.8,state_visu->torque);
   
 
   glColor3d(ORANGE);
   printArc(state_visu->joint[1].x, state_visu->joint[1].z,WHEEL_R*0.8,-state_visu->external_forces[4]);
+  printArc(state_visu->joint[2].x, state_visu->joint[2].z,WHEEL_R*0.8,-state_visu->external_forces[5]);
   // glColor3d(0.0, 0.8, 0.5);
   // if(abs(state_visu->springTorque)>0.01){
   //   printArc(state_visu->joint[1].x, state_visu->joint[1].z,WHEEL_R*0.8,-state_visu->springTorque/(0.9/5.));
   // }
-  glColor3d(0.0, 0.8, 0.5);
+  //glColor3d(0.0, 0.8, 0.5);
   // if(abs(state_visu->external_forces[4])>0.01){
   //   printArc(state_visu->joint[1].x, state_visu->joint[1].z,WHEEL_R*0.8,-state_visu->external_forces[4]);
   // }
   // printArc(state_visu->joint[1].x, state_visu->joint[1].z,WHEEL_R*0.8,-state_visu->external_forces[4]*100);
 
   glColor3d(0.0, 0.0, 1.0);
-  stringstream time,jt,ft,mt,bt,st,rw;
+  stringstream time,mt,wt,bt,st,dx,dxref;
   time << "TIME : " <<  v_simulation->timer <<" [sec]";
-  jt << "LINK JOINT MOTOR TORQUE : " << state_visu->external_forces[4] <<" [N m]"; 
-  ft << "WHEEL MOTOR TORQUE : " <<  state_visu->torque<<" [N m]";
+  bt << "BODYLINK JOINT TORQUE : " <<state_visu->external_forces[5] <<" [N m]";
+  mt << "MOTORLINK JOINT TORQUE : " << state_visu->external_forces[4] <<" [N m]"; 
+  wt << "WHEEL MOTOR TORQUE : " <<  state_visu->torque<<" [N m]";
+  dx<< "WHEEL SPEED : " <<  state_visu->wheel_velo<<" [m/s]";
+  dxref<<"WHEEL SPEED REF : " <<  state_visu->wheel_velo_ref<<" [m/s]";
+
+  
   // st << "Spring Torque: " << state_visu->springTorque;
  
   double font_pose = 20;
   DrawString(time.str(), IMAGE_WIDTH, IMAGE_HEIGHT, font_pose, font_pose);
-  DrawString(jt.str(), IMAGE_WIDTH, IMAGE_HEIGHT, font_pose, font_pose*2);
-  DrawString(ft.str(), IMAGE_WIDTH, IMAGE_HEIGHT, 20, 60);
-  DrawString(mt.str(), IMAGE_WIDTH, IMAGE_HEIGHT, 20, 80);
-  DrawString(bt.str(), IMAGE_WIDTH, IMAGE_HEIGHT, 20, 100);
+  DrawString(bt.str(), IMAGE_WIDTH, IMAGE_HEIGHT, font_pose, font_pose*2);
+  DrawString(mt.str(), IMAGE_WIDTH, IMAGE_HEIGHT, font_pose, font_pose*3);
+  DrawString(wt.str(), IMAGE_WIDTH, IMAGE_HEIGHT, font_pose, font_pose*4);
+  
+  DrawString(dx.str(), IMAGE_WIDTH, IMAGE_HEIGHT, font_pose, font_pose*19);
+  DrawString(dxref.str(), IMAGE_WIDTH, IMAGE_HEIGHT, font_pose, font_pose*20);
   // if(abs(state_visu->springTorque)>0.01)DrawString(st.str(), IMAGE_WIDTH, IMAGE_HEIGHT, 20, 100);
   // DrawString(st.str(), IMAGE_WIDTH, IMAGE_HEIGHT, 20, 100);
   glFlush();  

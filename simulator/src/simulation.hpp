@@ -55,6 +55,7 @@ class Simulation
     void BodyAngle();//ボディリンク目標角度ジェネレータ
 
     void Statefeedback();//状態フィードバック
+    void StateGenerator();//目標状態変数を生成
 
     void simu_loop(stateClass& state);
     double get_ground(double x);

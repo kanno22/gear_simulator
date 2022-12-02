@@ -24,6 +24,9 @@ stateClass::stateClass(){
     theta_3_dot = &velo[5];
 
     theta_g=0;
+
+    wheel_velo=0;
+    wheel_velo_ref=0;
     
 
     reset_state();
