@@ -9,7 +9,7 @@
 #define M_1  0.13//下腿
 #define M_m  0.05//モータ
 #define M_2  0.56//大腿
-#define M_3  0.2//ボディ
+#define M_3  0.2//0.2//ボディ
 //#define M_3 0.5
 
 //リンク長さ[m]
@@ -48,8 +48,8 @@
 #define  MAX_WHEEL_TORQUE 5
 
 // ばね定数[Nm/rad]
-//#define K_SPRING 1.92
-#define K_SPRING 1000
+#define K_SPRING 1.92
+//#define K_SPRING 1000
 
 // ばねのオフセット角度
 #define THETA_Jm (0*M_PI/180)
@@ -79,7 +79,7 @@
 #define Y_DISP -0.3//-0.7//-0.5
 #define X_DISP 0
 // ロボットの描画の大きさ
-#define PLOT_RATE 1.5
+#define PLOT_RATE 1//1.5//1.1
 
 #define X_WINDOWSIZE 600.0
 #define Y_WINDOWSIZE 900.0

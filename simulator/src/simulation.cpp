@@ -13,7 +13,11 @@
 #define TIME_SLOW_RATE 1
 
 //#define STOP_SIMULATION
+#define STOP_TIMER
+#define STOP_TIME 8
 
+#define AExcitation
+//#define Excitation
 #define T_UP 1
 double finish_time = 100;
 
@@ -44,9 +48,9 @@ Simulation::Simulation()
   olderror<<0,0,0,0,0,0;
 
 //
-  la=45*(M_PI/180);
+  la=20*(M_PI/180);
   lmax=2*THETA_2_START*(M_PI/180);
-  fg=2;
+  fg=1.5;//3.817;//2
   wg=2*M_PI*fg;
 
 //
@@ -57,8 +61,8 @@ Simulation::Simulation()
  // K<<-0.0130036,-0.0520144,-9.86449,-0.53132;//-1.-1,-1,-1 80degでも発散
  //K<<-0.208058,-0.520144,-14.9185,-1.48624;//-4,-1,-4,-1
   //K<<-3.32892,-3.32892,-82.0058,-3.38878;//-4,-4,-4,-4 60degだと発散
-  //K<<-0.208058,-0.416116,-14.9185,-1.18899;//-2,-2,-2,-2
-  K<<0,-0.416116,-14.9185,-1.18899;//位置指令なし
+  K<<-0.208058,-0.416116,-14.9185,-1.18899;//-2,-2,-2,-2
+  //K<<0,-0.416116,-14.9185,-1.18899;//位置指令なし
 
   reset_simulation();
 }
@@ -78,9 +82,15 @@ void Simulation::log_init()
   log.open("simulation_log.csv",ios::trunc);
   log << "time\t" 
       << "x\t" << "z\t" << "Theta_1\t" << "Theta_m\t"<<"Theta_2\t"<<"Theta_3\t"
-      <<"wheel torque\t"
-      << "motor torque\t"
-      << "body torque\t"
+      <<"reaction force\t"
+      <<"wheel torque\t"//WHEEL MOTOR TORQUE
+      << "angle2 torque\t"//BODYLINK JOINT TORQUE
+      << "motor torque\t"//BODYLINK JOINT TORQUE
+      << "body torque\t"//MOTORLINK JOINT TORQUE
+      << "spring torque\t"
+      <<"knee angle\t"
+      << "Theta_2_ref\t"
+      <<"CoD_z\t"
       << endl;
   logging();
 }
@@ -94,31 +104,66 @@ void Simulation::logging()
        << currentState.pose[3]*180/M_PI << "\t"
        << currentState.pose[4]*180/M_PI << "\t"
        <<currentState.pose[5]*180/M_PI << "\t"
+       << currentState.external_forces[1] << "\t"
        << currentState.torque << "\t"
-       <<currentState.external_forces[3] << "\t"
-       << currentState.external_forces[4] << "\t"
+       <<currentState.external_forces[4] << "\t"
+       <<-1*currentState.external_forces[4] << "\t"//モータリンクから見た
+       << currentState.external_forces[5] << "\t"
+       <<-1*currentState.pose[3]*K_SPRING<< "\t"
+       <<(currentState.pose[3]+currentState.pose[4])*180/M_PI << "\t"
+       <<pose_ref[4]*180/M_PI <<"\t"
+       <<currentState.joint[7].z<<"\t"
        << endl;
 }
 
 void Simulation::update_input()
 {
 
+#ifdef AExcitation
+AngleExcitation();
+#endif
+#ifdef Excitation
+if(timer<0.05)
+{
+  currentState.external_forces[4]=0.1;
+}
+else
+{
+  fbExcitation();
+}
+#endif
 
-//AngleExcitation();
 BodyAngle();
 PD();//角度をPD制御
 
-StateGenerator();
+//StateGenerator();
 Statefeedback();
 //  currentState.external_forces[4]=0.0;//大腿リンクへの入力
 //  currentState.external_forces[5]=0.0;//ボディリンクへの入力
 
 }
 
+void Simulation::fbExcitation()
+{
+
+  if(currentState.velo[3]>0)
+  {
+    currentState.external_forces[4]=-0.5;
+  }
+  else if(currentState.velo[3]<0)
+  {
+    currentState.external_forces[4]=0.5;
+  }
+  else
+  {
+    currentState.external_forces[4]=0;
+  }
+}
+
 void Simulation::AngleExcitation()
 {
 
-  if(timer<5)
+  if(timer<STOP_TIME)
   {
     pose_ref[4]=THETA_2_START*(M_PI/180);
   }
@@ -132,8 +177,8 @@ void Simulation::AngleExcitation()
 }
 void Simulation::BodyAngle()
 {
-  //pose_ref[5]=90*(M_PI/180);
-  pose_ref[4]=THETA_2_START*(M_PI/180);
+  
+  //pose_ref[4]=THETA_2_START*(M_PI/180);
   pose_ref[5]=THETA_3_START*(M_PI/180);
 }
 
@@ -158,7 +203,10 @@ void Simulation::PD()
     else if(u[5]<0)u[5]=-MAX_B_JOINT_TORQUE;
   }
 
+#ifdef AExcitation //角度で強制振動
   currentState.external_forces[4]=u[4];//theta2(モータ角度)
+#endif
+
   currentState.external_forces[5]=u[5];//theta3(ボディ間のモータ角度)
 
 
@@ -185,6 +233,14 @@ void Simulation::Statefeedback()
   
   // cout<<"dtheta_g=\n"<<(currentState.theta_g-oldstate(2,0))/delta_t;
   // cout<<"\n"<<currentState.velo(0,0)<<endl;
+  if(timer>STOP_TIME)
+  {
+     K<<-4*0.208058,-4*0.416116,-14.9185,-1.18899;//4.1
+  }
+  // else if(currentState.external_forces[1]==0)
+  // {
+  //   K<<-0.208058,-0.416116,-14.9185,-1.18899;//4.1
+  // }
   u=K*(state_ref-state);
   //cout<<"\n"<<state_ref-state;
   currentState.torque=u*WHEEL_R;
@@ -197,6 +253,9 @@ void Simulation::Statefeedback()
   // }
 
   //currentState.external_forces[0]=u;
+
+  currentState.wheel_velo=state(1,0);
+  currentState.wheel_velo_ref=state_ref(1,0);
 }
 
 void Simulation::StateGenerator()
@@ -214,7 +273,7 @@ void Simulation::StateGenerator()
   //   state_ref<<X_START,0,0,0;
   // }
 
-  if(timer<3)
+  if(timer<5)
   {
     state_ref<<X_START,0.5,0,0;//1m/s
   }
@@ -223,12 +282,9 @@ void Simulation::StateGenerator()
     state_ref<<X_START,0,0,0;
   }
 
-  cout<<"dxref="<<state_ref(1,0)<<endl;
-  cout<<"\n"<<endl;
-  cout<<"dx="<<state(1,0)<<endl;
-
-  currentState.wheel_velo=state(1,0);
-  currentState.wheel_velo_ref=state_ref(1,0);
+  // cout<<"dxref="<<state_ref(1,0)<<endl;
+  // cout<<"\n"<<endl;
+  // cout<<"dx="<<state(1,0)<<endl;
 
 }
 
@@ -250,12 +306,17 @@ void Simulation::simu_loop(stateClass& state)//メイン
   state = reset_simulation();//パラメータをリセット
   std::ofstream _log;
   _log.open("simulation_log.csv",ios::trunc);
-  _log << "time[sec]\t" 
-      << "x[m]\t" << "z[m]\t" << "Theta_r[deg]\t" << "Theta_j[deg]\t"
-      << "dx/dt[m/s]\t" << "dz/dt[m/s]\t" << "d(Theta_r)/dt[rad/sec]\t" << "d(Theta_j)/dt[rad/sec]\t"
-      <<"wheel torque\t"
-      << "motor torque\t"
-      << "body torque\t"
+  _log << "time\t" 
+      << "x\t" << "z\t" << "Theta_1\t" << "Theta_m\t"<<"Theta_2\t"<<"Theta_3\t"
+      <<"reaction force\t"
+      <<"wheel torque\t"//WHEEL MOTOR TORQUE
+      << "angle2 torque\t"//BODYLINK JOINT TORQUE
+      << "motor torque\t"//BODYLINK JOINT TORQUE
+      << "body torque\t"//MOTORLINK JOINT TORQUE
+      << "spring torque\t"
+      <<"knee angle\t"
+       << "Theta_2_ref\t"//目標モータ角度
+       <<"CoD_z\t"
       << endl;
   std::getchar();
   double time_offset = system_time.get_current_milli();
@@ -270,14 +331,27 @@ void Simulation::simu_loop(stateClass& state)//メイン
             << currentState.pose[3]*180/M_PI << "\t"
             << currentState.pose[4]*180/M_PI << "\t"
             <<currentState.pose[5]*180/M_PI << "\t"
+            <<currentState.external_forces[1]<< "\t"
             << currentState.torque << "\t"
-            <<currentState.external_forces[3] << "\t"
-            << currentState.external_forces[4] << "\t"
+            <<currentState.external_forces[4] << "\t"
+            <<-1*currentState.external_forces[4] << "\t"//モータリンクから見た
+            << currentState.external_forces[5] << "\t"
+            <<-1*currentState.pose[3]*K_SPRING<< "\t"
+            <<(currentState.pose[3]+currentState.pose[4])*180/M_PI << "\t"
+            <<pose_ref[4]*180/M_PI <<"\t"
+            <<currentState.joint[7].z<<"\t"
             << endl;
        #ifdef STOP_SIMULATION
         while( std::getchar() != '\n');
       #endif 
     
+    #ifdef STOP_TIMER
+    if(timer>STOP_TIME)
+    {
+      while( std::getchar() != '\n');   
+    }
+    #endif
+
     if (timer > finish_time) end_flag = 1;
     else end_flag =0;
   }

@@ -9,14 +9,14 @@
 
 // ロボットの初期位置 
 // x座標[m]
-#define X_START -0.9//0//-0.2//0.2//-0.2
+#define X_START -1.2//-1.3///-0.9//0//-0.2//0.2//-0.2
 // z座標[m]
 //#define Z_START 0.2
 #define Z_START WHEEL_R 
 // 初期角度[deg]
-#define THETA_1_START 90//80//45//80//60
+#define THETA_1_START 80//45//80//60
 #define THETA_m_START 0
-#define THETA_2_START 0//90//45//0
+#define THETA_2_START 45//90//45//0
 #define THETA_3_START 0//-45//0
 
 class jointClass{

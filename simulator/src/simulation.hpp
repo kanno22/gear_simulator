@@ -53,6 +53,8 @@ class Simulation
     void PD();//角度制御
     void AngleExcitation();//角度制御で励振
     void BodyAngle();//ボディリンク目標角度ジェネレータ
+    void fbExcitation();//フィードバック励振
+
 
     void Statefeedback();//状態フィードバック
     void StateGenerator();//目標状態変数を生成

@@ -124,6 +124,7 @@ void Visualize::printSimulation()
   bt << "BODYLINK JOINT TORQUE : " <<state_visu->external_forces[5] <<" [N m]";
   mt << "MOTORLINK JOINT TORQUE : " << state_visu->external_forces[4] <<" [N m]"; 
   wt << "WHEEL MOTOR TORQUE : " <<  state_visu->torque<<" [N m]";
+  st<< "SPRING TORQUE : " <<  state_visu->pose[3]*K_SPRING<<" [N m]";
   dx<< "WHEEL SPEED : " <<  state_visu->wheel_velo<<" [m/s]";
   dxref<<"WHEEL SPEED REF : " <<  state_visu->wheel_velo_ref<<" [m/s]";
 
@@ -135,7 +136,8 @@ void Visualize::printSimulation()
   DrawString(bt.str(), IMAGE_WIDTH, IMAGE_HEIGHT, font_pose, font_pose*2);
   DrawString(mt.str(), IMAGE_WIDTH, IMAGE_HEIGHT, font_pose, font_pose*3);
   DrawString(wt.str(), IMAGE_WIDTH, IMAGE_HEIGHT, font_pose, font_pose*4);
-  
+  DrawString(st.str(), IMAGE_WIDTH, IMAGE_HEIGHT, font_pose, font_pose*5);
+
   DrawString(dx.str(), IMAGE_WIDTH, IMAGE_HEIGHT, font_pose, font_pose*19);
   DrawString(dxref.str(), IMAGE_WIDTH, IMAGE_HEIGHT, font_pose, font_pose*20);
   // if(abs(state_visu->springTorque)>0.01)DrawString(st.str(), IMAGE_WIDTH, IMAGE_HEIGHT, 20, 100);
