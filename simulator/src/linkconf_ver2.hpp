@@ -26,16 +26,16 @@
 #define	J_1		6.851E-3//下腿
 #define	J_m		3.915776E-3//モータ
 #define J_2     7.862E-3//大腿
-#define J_3     5.0E-3 //ボディ
+#define J_3     5.0E-3 //5ボディ
 //#define J_3 0
 
 // 車輪半径[m]
 #define WHEEL_R 0.025
 
 // 段差の水平位置[m]
-#define STEP_X 0
+#define STEP_X 0.6
 // 段差の高さ[m]
-#define STEP_HIGHT 0.0
+#define STEP_HIGHT 0//0.05//0//0.1
 
 // 最大車軸トルク[N m]
 #define MAX_TORQUE 5
@@ -49,7 +49,7 @@
 
 // ばね定数[Nm/rad]
 #define K_SPRING 1.92
-//#define K_SPRING 1000
+//#define K_SPRING 10000
 
 // ばねのオフセット角度
 #define THETA_Jm (0*M_PI/180)
