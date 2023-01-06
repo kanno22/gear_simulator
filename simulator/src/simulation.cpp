@@ -48,12 +48,13 @@ Simulation::Simulation()
   olderror<<0,0,0,0,0,0;
 
 //
-  la=20*(M_PI/180);//20
+  la=21.5625*(M_PI/180);//20
   lmax=2*THETA_2_START*(M_PI/180);
   fg=1.5;//1.5;//3.817;//2
-  wg=2*M_PI*fg;
+  wg=-2*M_PI*fg;
   fap=2.7;
-  wap=2*M_PI*fap;
+  wap=-2*M_PI*fap;
+
   tto=0;
   ttocount=-1;//床反力が最初0Nだから
   ttocounter=0;
@@ -62,12 +63,13 @@ Simulation::Simulation()
   state<<0,0,0,0;
   oldstate<<0,0,0,0;
   state_ref<<X_START,0,0,0;
- //K<<-0.312087,-0.65018,-31.9268,-1.53888;//-1,-2,-3,-4
- //K<<-0.0130036,-0.0520144,-9.86449,-0.53132;//-1.-1,-1,-1 80degでも発散
- //K<<-0.208058,-0.520144,-14.9185,-1.48624;//-4,-1,-4,-1
-  //K<<-3.32892,-3.32892,-82.0058,-3.38878;//-4,-4,-4,-4 60degだと発散
   //K<<-0.208058,-0.416116,-14.9185,-1.18899;//-2,-2,-2,-2
   K<<0,-0.416116,-14.9185,-1.18899;//位置指令なし
+
+
+  oldbane[0]=0;
+  oldbane[1]=0;
+  n=0;//２回目の振動の極大値
 
   reset_simulation();
 }
@@ -127,10 +129,11 @@ void Simulation::logging()
 
 void Simulation::update_input()
 {
-
+extremum();
 #ifdef AExcitation
-AngleExcitation();
+//AngleExcitation();
 //AngleExcitation_2();
+AngleExcitation_f();
 #endif
 #ifdef Excitation
 if(timer<0.05)
@@ -156,9 +159,6 @@ if(currentState.external_forces[1]==0)
     tto=timer;
   }
   ttocount++;
-  cout<<"\ntto="<<tto<<endl;
-  cout<<"\nttocount="<<ttocount<<endl;
-  cout<<"\nttocounter="<<ttocounter<<endl;
 }
 else
 {
@@ -167,10 +167,10 @@ else
     ttocount=0;
     ttocounter++;//着地したらカウントアップ
   }
-  cout<<"\ntto="<<tto<<endl;
-  cout<<"\nttocount="<<ttocount<<endl;
-  cout<<"\nttocounter="<<ttocounter<<endl;
 }
+ cout<<"tto="<<tto<<endl;
+  cout<<"ttocount="<<ttocount<<endl;
+  cout<<"ttocounter="<<ttocounter<<endl;
 
 //  currentState.external_forces[4]=0.0;//大腿リンクへの入力
 //  currentState.external_forces[5]=0.0;//ボディリンクへの入力
@@ -195,25 +195,6 @@ void Simulation::fbExcitation()
 
 void Simulation::AngleExcitation()
 {
-
-  // if(timer<STOP_TIME)
-  // {
-  //   pose_ref[4]=THETA_2_START*(M_PI/180);
-  // }
-  // else if((timer>=STOP_TIME)&&(timer<STOP_TIME+(4/(4*fg))))//3/4
-  // {
-  //   //pose_ref[4]=THETA_2_START*(M_PI/180);
-  //   pose_ref[4]=(lmax/2)+la*sin(wg*timer);
-  //   cout<<"\n"<<pose_ref[4]*(180/M_PI)<<endl;
-   
-  // }
-  // else
-  // {
-  //  // pose_ref[4]=((lmax/2)+(30*(M_PI/180)-la))+30*(M_PI/180)*sin(wg*timer);
-  //   pose_ref[4]=((lmax/2))+30*(M_PI/180)*sin(wg*timer);
-    
-  //   //cout<<"\n"<<STOP_TIME+(3/(4*fg))<<endl;
-  // }
   //ver1
   if(timer<STOP_TIME)
   {
@@ -250,6 +231,65 @@ void Simulation::AngleExcitation_2()
     cout<<"\nttocount="<<ttocount<<endl;
     ttocount++;
   }
+}
+
+void Simulation::AngleExcitation_f()
+{
+  if((timer<STOP_TIME)&&(currentState.external_forces[1]>0))
+  {
+    pose_ref[4]=THETA_2_START*(M_PI/180);
+  }
+  else if((timer>=STOP_TIME)&&(n<2)&&(currentState.external_forces[1]>0))
+  {
+    pose_ref[4]=(lmax/2)+la*sin(wg*(timer-STOP_TIME));
+  }
+  else if((timer>=STOP_TIME)&&(n=2)&&(currentState.external_forces[1]>0))
+  {
+    pose_ref[4]=(lmax/2)+(lmax/2)*sin(wg*(timer-STOP_TIME));
+    
+  }
+  else 
+  {
+   pose_ref[4]=(lmax/2)+(lmax/2)*sin(wap*(timer-STOP_TIME)+(wg-wap)*(tto-STOP_TIME));
+   //pose_ref[4]=(lmax/2)+(lmax/2)*sin(wg*(timer-STOP_TIME));
+   cout<<"離陸"<<endl;
+  }
+  
+}
+
+int Simulation::extremum()
+{
+  if(timer>=STOP_TIME+delta_t)
+  {
+    if((timer>=STOP_TIME+delta_t)&&(timer<(STOP_TIME+2*delta_t)))
+    {
+      oldbane[0]=currentState.pose[3];
+      cout<<"実行1"<<endl;
+    }
+    else if ((timer>=STOP_TIME+2*delta_t)&&(timer<(STOP_TIME+3*delta_t)))
+    {
+      oldbane[1]=currentState.pose[3];
+      cout<<"実行2"<<endl;
+    }
+    else if(timer>=(STOP_TIME+3*delta_t))
+    {
+      if(oldbane[1]<oldbane[0])
+      {
+        if(currentState.pose[3]>oldbane[1])
+        {
+          n++;
+        }
+      }
+        cout<<"実行3"<<endl;
+        
+        oldbane[0]=oldbane[1];
+        oldbane[1]=currentState.pose[3];
+    }
+    cout<<"timer="<<timer<<endl;
+  }
+//極小値の判定
+    cout<<"n="<<n<<endl;
+  return n;
 }
 
 void Simulation::BodyAngle()
@@ -302,35 +342,11 @@ void Simulation::Statefeedback()
   {
      state<<currentState.pose(0,0),currentState.velo(0,0),currentState.theta_g,(currentState.theta_g-oldstate(2,0))/delta_t;
   }
-  cout<<"\ntheta_gref="<<state_ref(2,0)*180/M_PI;
-  cout<<"\ntheta_g="<<currentState.theta_g*180/M_PI;
-  // cout<<"oldtheta_g=\n"<<oldstate(2,0)<<endl;
-  
-  // cout<<"dtheta_g=\n"<<(currentState.theta_g-oldstate(2,0))/delta_t;
-  // cout<<"\n"<<currentState.velo(0,0)<<endl;
-  
+  cout<<"theta_gref="<<state_ref(2,0)*180/M_PI;
+  cout<<"theta_g="<<currentState.theta_g*180/M_PI;
+    
   u=K*(state_ref-state);
 
-  // if(state(1,0)>2)
-  // {
-  //     u=K*(state_ref-state);//-0.1/WHEEL_R;
-  //     //cout<<"u= \n"<< K*(state_ref-state) <<"+"<< -0.1/WHEEL_R <<endl;
-  // }
-  // else
-  // {
-  //     u=K*(state_ref-state);
-  // }
-    // if(timer>7.6)
-    // {
-    //    u==K*(state_ref-state);
-    // }
-    // else
-    // {
-    //    u=K*(state_ref-state);
-    // }
-
-
-  //cout<<"\n"<<state_ref-state;
   currentState.torque=u*WHEEL_R;
 
   oldstate=state;
@@ -346,51 +362,17 @@ void Simulation::Statefeedback()
 
 void Simulation::StateGenerator()
 {
-  // if(timer<1)
-  // {
-  //   state_ref<<X_START,0,0,0;
-  // }
-  // else if((timer>=1)&&(timer<2))
-  // {
-  //   state_ref<<X_START,1,0,0;//1m/s
-  // }
-  // else
-  // {
-  //   state_ref<<X_START,0,0,0;
-  // }
-
-  // if(timer<STOP_TIME)
-  // {
-  //   state_ref<<X_START,0.2,0,0;//1m/s
-  // }
-  // else
-  // {
-  //   if((state(1,0)>1.5)&&(state(1,0)<2.5))
-  //   {
-  //     state_ref<<X_START,0.2,M_PI*10/180,0;//15
-  //     cout<<"\n"<<state_ref<<endl;
-  //   }
-  //   else if(state(1,0)>=2.5)
-  //   {
-  //     state_ref<<X_START,0.2,M_PI*8/180,0;//15
-  //     cout<<"\n"<<state_ref<<endl;
-  //   }
-  //   else
-  //   {
-  //     state_ref<<X_START,0.2,M_PI*0/180,0;
-  //   }
-  // }
-
     if(timer<STOP_TIME)
   {
     state_ref<<X_START,0.2,0,0;//1m/s
   }
-  else
+  else if(n>=2)
   {
     if((state(1,0)>1.5))
     {
-      state_ref<<X_START,0.2,M_PI*10/180,0;//15
-      cout<<"\n"<<state_ref<<endl;
+      state_ref<<X_START,0.2,M_PI*0/180,0;//10
+      //cout<<"\n"<<state_ref<<endl;
+      cout<<"目標値"<<endl;
     }
     else
     {
@@ -401,15 +383,11 @@ void Simulation::StateGenerator()
   if((timer>=STOP_TIME)&&(timer<STOP_TIME+delta_t))
   {
     K<<0,-0.416116,-14.9185,-1.18899;//4.1
-     //K<<-4*0.208058,-4*0.416116,-14.9185,-1.18899;//4.1
-     //K<<0,-4*0.416116,-14.9185,-1.18899;//4.1
-     //K<<0,-0.416116,-14.9185,4*-1.18899;//4.1
   }
   else if(currentState.pose[1]>=WHEEL_R+0.005)
   {
     K<<0,-0.416116,-14.9185,-1.18899;//4.1
   }
- // cout<<K<<"\n"<<endl;
 
 }
 

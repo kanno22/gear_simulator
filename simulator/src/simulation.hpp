@@ -37,12 +37,18 @@ class Simulation
     double wg;
     double fap;
     double wap;
+
     double tto;
     double tg;
     int ttocount;
     int ttocounter;
 
+    //極値
+    double oldbane[2];
+    int n;
+
     void update_input();
+    int extremum();//極値の判定 n回目の極少値1 それ以外0
 
     public:
     Simulation();
@@ -59,7 +65,8 @@ class Simulation
     void PD();//角度制御
     void AngleExcitation();//角度制御で励振
     void AngleExcitation_2();//空中区間も含む
-    void AngleExcitation_3();//接地したら加振停止
+    
+    void AngleExcitation_f();//最終版
     void BodyAngle();//ボディリンク目標角度ジェネレータ
     void fbExcitation();//フィードバック励振
 
