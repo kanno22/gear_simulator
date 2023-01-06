@@ -35,6 +35,12 @@ class Simulation
     double lmax;
     double fg;
     double wg;
+    double fap;
+    double wap;
+    double tto;
+    double tg;
+    int ttocount;
+    int ttocounter;
 
     void update_input();
 
@@ -52,6 +58,8 @@ class Simulation
     
     void PD();//角度制御
     void AngleExcitation();//角度制御で励振
+    void AngleExcitation_2();//空中区間も含む
+    void AngleExcitation_3();//接地したら加振停止
     void BodyAngle();//ボディリンク目標角度ジェネレータ
     void fbExcitation();//フィードバック励振
 

@@ -9,9 +9,9 @@
 
 // ロボットの初期位置 
 // x座標[m]
-#define X_START -1.2//-2.5//-1.2//-1.3///-0.9//0//-0.2//0.2//-0.2
+#define X_START -2.5//-1.8//-1.6//-1.2//-2.5//-1.2//-1.3///-0.9//0//-0.2//0.2//-0.2
 // z座標[m]
-//#define Z_START 0.2
+//#define Z_START 20
 #define Z_START WHEEL_R 
 // 初期角度[deg]
 #define THETA_1_START 80//45//80//60
