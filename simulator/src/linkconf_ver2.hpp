@@ -9,7 +9,7 @@
 #define M_1  0.13//下腿
 #define M_m  0.05//モータ
 #define M_2  0.56//大腿
-#define M_3  0.2//0.025//0.2//ボディ
+#define M_3  0.2//0.01//0.2//ボディ
 //#define M_3 0.5
 
 //リンク長さ[m]
@@ -17,8 +17,8 @@
 #define P_1  0.1
 #define L_2  0.2//大腿
 #define P_2  0.05
-#define L_3  0.1//0.01//ボディ 0.1
-#define P_3  0.05//0.005 //0.05
+#define L_3  0.1//0.04//ボディ 0.1 
+#define P_3  0.05//0.02 //0.05
 // #define L_3 0.21
 // #define P_3 0.21
 
@@ -26,16 +26,16 @@
 #define	J_1		6.851E-3//下腿
 #define	J_m		3.915776E-3//モータ
 #define J_2     7.862E-3//大腿
-#define J_3     5.0E-3//8.333E-7//5.0E-3 //5ボディ
+#define J_3     5.0E-3//5.333E-8//5.0E-3 //5ボディ 
 //#define J_3 0
 
 // 車輪半径[m]
 #define WHEEL_R 0.025
 
 // 段差の水平位置[m]
-#define STEP_X 0.6
+#define STEP_X 0.5
 // 段差の高さ[m]
-#define STEP_HIGHT 0//0.05//0//0.1
+#define STEP_HIGHT 0.1//0
 
 // 最大車軸トルク[N m]
 #define MAX_TORQUE 5

@@ -235,22 +235,22 @@ void Simulation::AngleExcitation_2()
 
 void Simulation::AngleExcitation_f()
 {
-  if((timer<STOP_TIME)&&(currentState.external_forces[1]>0))
+  if((timer<STOP_TIME)&&(currentState.external_forces[1]>0)&&(ttocounter==0))
   {
     pose_ref[4]=THETA_2_START*(M_PI/180);
   }
-  else if((timer>=STOP_TIME)&&(n<2)&&(currentState.external_forces[1]>0))
+  else if((timer>=STOP_TIME)&&(n<2)&&(currentState.external_forces[1]>0)&&(ttocounter==0))
   {
     pose_ref[4]=(lmax/2)+la*sin(wg*(timer-STOP_TIME));
   }
-  else if((timer>=STOP_TIME)&&(n=2)&&(currentState.external_forces[1]>0))
+  else if((timer>=STOP_TIME)&&(n=2)&&(currentState.external_forces[1]>0)&&(ttocounter==0))
   {
     pose_ref[4]=(lmax/2)+(lmax/2)*sin(wg*(timer-STOP_TIME));
     
   }
   else 
   {
-   pose_ref[4]=(lmax/2)+(lmax/2)*sin(wap*(timer-STOP_TIME)+(wg-wap)*(tto-STOP_TIME));
+   pose_ref[4]=(lmax/2)+(0)*(M_PI/180)*sin(wap*(timer-STOP_TIME)+(wg-wap)*(tto-STOP_TIME));
    //pose_ref[4]=(lmax/2)+(lmax/2)*sin(wg*(timer-STOP_TIME));
    cout<<"離陸"<<endl;
   }
@@ -325,6 +325,8 @@ void Simulation::PD()
 #endif
 
   currentState.external_forces[5]=u[5];//theta3(ボディ間のモータ角度)
+  //currentState.external_forces[5]=0;//theta3(ボディ間のモータ角度)
+
 
   olderror=error;
 }
