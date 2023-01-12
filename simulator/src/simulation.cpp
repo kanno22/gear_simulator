@@ -129,6 +129,36 @@ void Simulation::logging()
 
 void Simulation::update_input()
 {
+
+if(currentState.external_forces[1]==0)
+{
+  if(ttocount==0)
+  {
+    if(ttocounter==0)
+    {
+      tto=timer;
+    }
+    
+  }
+  ttocount++;
+}
+else
+{
+  if((timer>tto)&&(ttocount!=0))
+  {
+    ttocount=0;
+    ttocounter++;//着地したらカウントアップ
+    if(ttocounter==1)
+    {
+      tg=timer;
+    }
+  }
+}
+ cout<<"tto="<<tto<<endl;
+  cout<<"ttocount="<<ttocount<<endl;
+  cout<<"ttocounter="<<ttocounter<<endl;
+  cout<<"tg="<<tg<<endl;
+
 extremum();
 #ifdef AExcitation
 //AngleExcitation();
@@ -152,25 +182,6 @@ PD();//角度をPD制御
 StateGenerator();
 Statefeedback();
 
-if(currentState.external_forces[1]==0)
-{
-  if(ttocount==0)
-  {
-    tto=timer;
-  }
-  ttocount++;
-}
-else
-{
-  if((timer>tto)&&(ttocount!=0))
-  {
-    ttocount=0;
-    ttocounter++;//着地したらカウントアップ
-  }
-}
- cout<<"tto="<<tto<<endl;
-  cout<<"ttocount="<<ttocount<<endl;
-  cout<<"ttocounter="<<ttocounter<<endl;
 
 //  currentState.external_forces[4]=0.0;//大腿リンクへの入力
 //  currentState.external_forces[5]=0.0;//ボディリンクへの入力
@@ -243,16 +254,24 @@ void Simulation::AngleExcitation_f()
   {
     pose_ref[4]=(lmax/2)+la*sin(wg*(timer-STOP_TIME));
   }
-  else if((timer>=STOP_TIME)&&(n=2)&&(currentState.external_forces[1]>0)&&(ttocounter==0))
+  else if((timer>=STOP_TIME)&&(n==2)&&(currentState.external_forces[1]>0)&&(ttocounter==0))
   {
-    pose_ref[4]=(lmax/2)+(lmax/2)*sin(wg*(timer-STOP_TIME));
-    
+    n=2;//add
+    // pose_ref[4]=(lmax/2)+(lmax/2)*sin(wg*(timer-STOP_TIME));
+    pose_ref[4]=(lmax/2)+(45)*(M_PI/180)*sin(wg*(timer-STOP_TIME));
   }
-  else 
+  else if((timer>=STOP_TIME)&&(n==2)&&(currentState.external_forces[1]==0)&&(ttocounter==0))
   {
-   pose_ref[4]=(lmax/2)+(0)*(M_PI/180)*sin(wap*(timer-STOP_TIME)+(wg-wap)*(tto-STOP_TIME));
+   pose_ref[4]=(lmax/2)+(5)*(M_PI/180)*sin(wap*(timer-STOP_TIME)+(wg-wap)*(tto-STOP_TIME));
    //pose_ref[4]=(lmax/2)+(lmax/2)*sin(wg*(timer-STOP_TIME));
    cout<<"離陸"<<endl;
+  }
+  else if(ttocounter>0)
+  {
+    //pose_ref[4]=(lmax/2)+(5)*(M_PI/180)*sin(wap*(tg-STOP_TIME)+(wg-wap)*(tto-STOP_TIME));
+    //pose_ref[4]=(lmax/2)+(45)*(M_PI/180)*sin(wap*(timer-STOP_TIME)+(wg-wap)*(tto-STOP_TIME));
+    pose_ref[4]=87.5*(M_PI/180);
+    cout<<"着地"<<endl;
   }
   
 }
@@ -278,7 +297,9 @@ int Simulation::extremum()
         if(currentState.pose[3]>oldbane[1])
         {
           n++;
+          cout<<"n++"<<endl;
         }
+        cout<<"単調に減少"<<endl;
       }
         cout<<"実行3"<<endl;
         
@@ -370,16 +391,24 @@ void Simulation::StateGenerator()
   }
   else if(n>=2)
   {
-    if((state(1,0)>1.5))
+    if(ttocounter<1)
     {
-      state_ref<<X_START,0.2,M_PI*0/180,0;//10
-      //cout<<"\n"<<state_ref<<endl;
-      cout<<"目標値"<<endl;
+      if((state(1,0)>1.0))
+      {
+        state_ref<<X_START,0.2,M_PI*-7.5/180,0;//10
+        //cout<<"\n"<<state_ref<<endl;
+        cout<<"目標値"<<endl;
+      }
+      else
+      {
+        state_ref<<X_START,0.2,M_PI*0/180,0;
+      }
     }
     else
     {
-      state_ref<<X_START,0.2,M_PI*0/180,0;
+      state_ref<<X_START,0,M_PI*0/180,0;
     }
+    
   }
 
   if((timer>=STOP_TIME)&&(timer<STOP_TIME+delta_t))
