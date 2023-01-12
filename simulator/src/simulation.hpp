@@ -46,6 +46,7 @@ class Simulation
     //極値
     double oldbane[2];
     int n;
+    int ncount;
 
     void update_input();
     int extremum();//極値の判定 n回目の極少値1 それ以外0

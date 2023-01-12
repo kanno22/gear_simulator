@@ -70,6 +70,7 @@ Simulation::Simulation()
   oldbane[0]=0;
   oldbane[1]=0;
   n=0;//２回目の振動の極大値
+  ncount=0;
 
   reset_simulation();
 }
@@ -254,24 +255,29 @@ void Simulation::AngleExcitation_f()
   {
     pose_ref[4]=(lmax/2)+la*sin(wg*(timer-STOP_TIME));
   }
-  else if((timer>=STOP_TIME)&&(n==2)&&(currentState.external_forces[1]>0)&&(ttocounter==0))
+  else if((timer>=STOP_TIME)&&(n>=2)&&(currentState.external_forces[1]>0)&&(ttocounter==0))
   {
-    n=2;//add
+    //n=2;//add
     // pose_ref[4]=(lmax/2)+(lmax/2)*sin(wg*(timer-STOP_TIME));
     pose_ref[4]=(lmax/2)+(45)*(M_PI/180)*sin(wg*(timer-STOP_TIME));
   }
-  else if((timer>=STOP_TIME)&&(n==2)&&(currentState.external_forces[1]==0)&&(ttocounter==0))
+  else if((timer>=STOP_TIME)&&(n>=2)&&(currentState.external_forces[1]==0)&&(ttocounter==0))
   {
    pose_ref[4]=(lmax/2)+(5)*(M_PI/180)*sin(wap*(timer-STOP_TIME)+(wg-wap)*(tto-STOP_TIME));
    //pose_ref[4]=(lmax/2)+(lmax/2)*sin(wg*(timer-STOP_TIME));
    cout<<"離陸"<<endl;
   }
-  else if(ttocounter>0)
+  else if((n<4)&&(ttocounter>0))
   {
     //pose_ref[4]=(lmax/2)+(5)*(M_PI/180)*sin(wap*(tg-STOP_TIME)+(wg-wap)*(tto-STOP_TIME));
     //pose_ref[4]=(lmax/2)+(45)*(M_PI/180)*sin(wap*(timer-STOP_TIME)+(wg-wap)*(tto-STOP_TIME));
-    pose_ref[4]=87.5*(M_PI/180);
+    pose_ref[4]=83.125*(M_PI/180);
     cout<<"着地"<<endl;
+  }
+  else if((n>=4)&&(ttocounter>0))
+  {
+      pose_ref[4]=45*(M_PI/180);
+    cout<<"ステップ"<<endl;
   }
   
 }
@@ -296,8 +302,13 @@ int Simulation::extremum()
       {
         if(currentState.pose[3]>oldbane[1])
         {
+          
           n++;
           cout<<"n++"<<endl;
+
+          if(n==3)ncount++;
+          if(ncount==1)n=2;
+
         }
         cout<<"単調に減少"<<endl;
       }
@@ -395,7 +406,7 @@ void Simulation::StateGenerator()
     {
       if((state(1,0)>1.0))
       {
-        state_ref<<X_START,0.2,M_PI*-7.5/180,0;//10
+        state_ref<<X_START,0.2,M_PI*-8.75/180,0;//10
         //cout<<"\n"<<state_ref<<endl;
         cout<<"目標値"<<endl;
       }

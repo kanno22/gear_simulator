@@ -35,7 +35,7 @@
 // 段差の水平位置[m]
 #define STEP_X 0.55//0.5
 // 段差の高さ[m]
-#define STEP_HIGHT 0.025//0
+#define STEP_HIGHT 0.01//0.025//0
 
 // 最大車軸トルク[N m]
 #define MAX_TORQUE 5
@@ -72,14 +72,14 @@
 
 // ディスプレイ設定
 // 描画の大きさ
-#define IMAGE_WIDTH  1000//720.0
+#define IMAGE_WIDTH  1900//1000//720.0
 #define IMAGE_HEIGHT 480.0
 #define RATIO_XY (IMAGE_WIDTH /IMAGE_HEIGHT) 
 // ロボットの描画位置
 #define Y_DISP -0.3//-0.7//-0.5
 #define X_DISP 0
 // ロボットの描画の大きさ
-#define PLOT_RATE 0.6//0.2//0.75//0.75//0.8//0.6//1//0.6//1.5//1.1
+#define PLOT_RATE 0.6//0.75//0.75//0.8//0.6//1//0.6//1.5//1.1
 
 #define X_WINDOWSIZE 600.0
 #define Y_WINDOWSIZE 900.0
