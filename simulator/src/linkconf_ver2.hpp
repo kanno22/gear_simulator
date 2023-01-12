@@ -33,9 +33,9 @@
 #define WHEEL_R 0.025
 
 // 段差の水平位置[m]
-#define STEP_X 0.55//0.5
+#define STEP_X 0.71//0.5
 // 段差の高さ[m]
-#define STEP_HIGHT 0.01//0.025//0
+#define STEP_HIGHT 0.03//0
 
 // 最大車軸トルク[N m]
 #define MAX_TORQUE 5

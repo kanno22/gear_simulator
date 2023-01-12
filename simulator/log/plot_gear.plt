@@ -65,4 +65,20 @@ set y2label "force [N]"
 #set y2tics 0,10
 set ytics nomirror
 set autoscale y2
-p [0:10]  file u 1:6 axis x1y1 title "moter angle[deg]" w l lw 1, file u 1:14 axis x1y1 title "knee angle[deg]" w l lw 1, file u 1:5 axis x1y1 title "spring angle[deg]" w l lw 1,file u 1:8 axis x1y2 title "reaction force[N]" w l lw 1; 
+p [0:10]  file u 1:6 axis x1y1 title "moter angle[deg]" w l lw 1, file u 1:14 axis x1y1 title "knee angle[deg]" w l lw 1, file u 1:5 axis x1y1 title "spring angle[deg]" w l lw 1,file u 1:8 axis x1y2 title "reaction force[N]" w l lw 1;
+
+set terminal png
+set output "/home/kanno/gear_simulator/simulator/log/images/Wheel.png"
+set title "Wheel"
+set ylabel "Rmp [rmp]"
+set y2label "Torque [N m]"
+#set y2tics 0,10
+set ytics nomirror
+set autoscale y2
+p [0:10]  file u 1:20 axis x1y1 title "wheel rmp[rmp]" w l lw 1, file u 1:9 axis x1y2 title "wheel torque[N m]" w l lw 1;
+
+set terminal png
+set output "/home/kanno/gear_simulator/simulator/log/images/Wheeloutput.png"
+set title "Wheeloutput"
+set ylabel "output [W]"
+p [0:10] file u 1:21 axis x1y1 title "output[W]" w l lw 1; 

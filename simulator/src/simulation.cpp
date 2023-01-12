@@ -13,7 +13,7 @@
 #define TIME_SLOW_RATE 1
 
 //#define STOP_SIMULATION
-#define STOP_TIMER
+//#define STOP_TIMER
 #define STOP_TIME 6//8//0
 
 #define AExcitation
@@ -101,6 +101,9 @@ void Simulation::log_init()
       <<"CoD_z\t"
       <<"Wheel_speed\t"
       <<"Wheel_speed_ref\t"
+      <<"Wheel_anglespeed\t"
+      <<"Wheel_rpm\t"
+      <<"Wheel_output\t"
       << endl;
   logging();
 }
@@ -125,6 +128,9 @@ void Simulation::logging()
        <<currentState.joint[7].z<<"\t"
        <<currentState.wheel_velo<<"\t"
        <<currentState.wheel_velo_ref<<"\t"
+       <<currentState.wheel_velo/WHEEL_R<<"\t"
+       <<(currentState.wheel_velo/WHEEL_R)*(30/M_PI)<<"\t"
+       <<(currentState.wheel_velo/WHEEL_R)*currentState.torque<<"\t"
        << endl;
 }
 
@@ -259,7 +265,7 @@ void Simulation::AngleExcitation_f()
   {
     //n=2;//add
     // pose_ref[4]=(lmax/2)+(lmax/2)*sin(wg*(timer-STOP_TIME));
-    pose_ref[4]=(lmax/2)+(45)*(M_PI/180)*sin(wg*(timer-STOP_TIME));
+    pose_ref[4]=(lmax/2)+(48)*(M_PI/180)*sin(wg*(timer-STOP_TIME));
   }
   else if((timer>=STOP_TIME)&&(n>=2)&&(currentState.external_forces[1]==0)&&(ttocounter==0))
   {
@@ -276,7 +282,7 @@ void Simulation::AngleExcitation_f()
   }
   else if((n>=4)&&(ttocounter>0))
   {
-      pose_ref[4]=45*(M_PI/180);
+      pose_ref[4]=45*(M_PI/180);//45
     cout<<"ステップ"<<endl;
   }
   
@@ -406,7 +412,7 @@ void Simulation::StateGenerator()
     {
       if((state(1,0)>1.0))
       {
-        state_ref<<X_START,0.2,M_PI*-8.75/180,0;//10
+        state_ref<<X_START,0.2,M_PI*-12.5/180,0;//-8.75
         //cout<<"\n"<<state_ref<<endl;
         cout<<"目標値"<<endl;
       }
@@ -464,6 +470,9 @@ void Simulation::simu_loop(stateClass& state)//メイン
       <<"CoD_z\t"
       <<"Wheel_speed\t"
       <<"Wheel_speed_ref\t"
+      <<"Wheel_anglespeed\t"
+      <<"Wheel_rpm\t"
+      <<"Wheel_output\t"
       << endl;
   std::getchar();
   double time_offset = system_time.get_current_milli();
@@ -489,6 +498,9 @@ void Simulation::simu_loop(stateClass& state)//メイン
             <<currentState.joint[7].z<<"\t"
             <<currentState.wheel_velo<<"\t"
             <<currentState.wheel_velo_ref<<"\t"
+            <<currentState.wheel_velo/WHEEL_R<<"\t"
+            <<(currentState.wheel_velo/WHEEL_R)*(30/M_PI)<<"\t"
+            <<(currentState.wheel_velo/WHEEL_R)*currentState.torque<<"\t"
             << endl;
        #ifdef STOP_SIMULATION
         while( std::getchar() != '\n');
